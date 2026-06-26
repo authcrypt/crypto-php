@@ -1,0 +1,68 @@
+{
+    "name": "authcrypt/crypto-php",
+    "type": "library",
+    "description": "Application-level symmetric encryption for PHP",
+    "keywords": [
+        "aead",
+        "decryption",
+        "encryption",
+        "envelope-encryption",
+        "hkdf"
+    ],
+    "homepage": "https://github.com/authcrypt/crypto-php",
+    "license": "MIT",
+    "support": {
+        "issues": "https://github.com/authcrypt/crypto-php/issues?state=open",
+        "source": "https://github.com/authcrypt/crypto-php"
+    },
+    "require": {
+        "php": "8.2 - 8.5",
+        "ext-hash": "*"
+    },
+    "require-dev": {
+        "bamarni/composer-bin-plugin": "^1.9.1",
+        "maglnet/composer-require-checker": "^4.17.0",
+        "phpunit/phpunit": "^11.5.55",
+        "spatie/phpunit-watcher": "^1.24.4"
+    },
+    "suggest": {
+        "ext-openssl": "Required for OpenSSL based ciphers",
+        "ext-sodium": "Required for Sodium based ciphers"
+    },
+    "autoload": {
+        "psr-4": {
+            "Authcrypt\\Crypto\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Authcrypt\\Crypto\\Tests\\": "tests"
+        }
+    },
+    "extra": {
+        "bamarni-bin": {
+            "bin-links": true,
+            "target-directory": "tools",
+            "forward-command": true
+        }
+    },
+    "scripts": {
+        "test": "phpunit --display-deprecations",
+        "test:watch": "phpunit-watcher watch",
+        "infection": "infection --ignore-msi-with-no-mutations --threads=max",
+        "psalm": "psalm",
+        "rector-check": "rector --dry-run",
+        "rector": "rector",
+        "cs-check": "php-cs-fixer check",
+        "cs-fix": "php-cs-fixer fix",
+        "dependency-analyser": "composer-dependency-analyser"
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "bamarni/composer-bin-plugin": true,
+            "composer/package-versions-deprecated": true,
+            "infection/extension-installer": true
+        }
+    }
+}

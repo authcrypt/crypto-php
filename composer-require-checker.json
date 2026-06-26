@@ -1,0 +1,12 @@
+{
+    "php-core-extensions" : [
+        "Core",
+        "hash",
+        "Reflection",
+        "SPL",
+        "random",
+        "standard",
+        "openssl",
+        "sodium"
+    ]
+}

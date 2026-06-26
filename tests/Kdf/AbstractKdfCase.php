@@ -1,0 +1,148 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Authcrypt\Crypto\Tests\Kdf;
+
+use RuntimeException;
+use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
+use Authcrypt\Crypto\EncryptionException;
+use Authcrypt\Crypto\KdfInterface;
+use Authcrypt\Crypto\Helper\StringHelper;
+
+abstract class AbstractKdfCase extends TestCase
+{
+    abstract public static function dataProviderKeyValues(): iterable;
+
+    public static function dataProviderAlgoKeySize(): iterable
+    {
+        yield ['sha256', 32];
+        yield ['sha512', 64];
+        yield ['sha3-256', 48];
+    }
+
+    public function testDeriveSuccess(): void
+    {
+        $kdf = $this->createKdfInstance();
+        $keySize = 32;
+        $secret = random_bytes($keySize);
+        $salt = random_bytes($kdf->getSaltSize());
+        $key = $kdf->derive($secret, $keySize, 'test-context', $salt);
+
+        $this->assertSame($keySize, StringHelper::byteLength($key));
+        $this->assertNotSame($secret, $key);
+    }
+
+    #[DataProvider('dataProviderKeyValues')]
+    public function testKeyValues(string $hashAlgo, string $secret, int $keySize, string $context, string $salt, string $key): void
+    {
+        $kdf = $this->createKdfInstance($hashAlgo);
+
+        $secret = hex2bin(preg_replace('{\s+}', '', $secret));
+        $salt = hex2bin(preg_replace('{\s+}', '', $salt));
+        $key = hex2bin(preg_replace('{\s+}', '', $key));
+
+        $this->assertSame($key, $kdf->derive($secret, $keySize, $context, $salt));
+    }
+
+    #[DataProvider('dataProviderAlgoKeySize')]
+    public function testDeriveWithCustomAlgorithm(string $hashAlgo, int $keySize): void
+    {
+        $kdf = $this->createKdfInstance($hashAlgo);
+        $salt = random_bytes($kdf->getSaltSize());
+
+        $key = $kdf->derive('test-secret', $keySize, 'test-context', $salt);
+
+        $this->assertSame($keySize, StringHelper::byteLength($key));
+    }
+
+    public function testSameParametersProduceSameKey(): void
+    {
+        $kdf = $this->createKdfInstance();
+        $keySize = 64;
+        $secret = random_bytes($keySize);
+        $salt = random_bytes($kdf->getSaltSize());
+
+        $key1 = $kdf->derive($secret, $keySize, 'test-context', $salt);
+        $key2 = $kdf->derive($secret, $keySize, 'test-context', $salt);
+
+        $this->assertSame($key1, $key2);
+    }
+
+    public function testDifferentParamsProducesDifferentKey(): void
+    {
+        $kdf = $this->createKdfInstance();
+        $keySize = 32;
+        $secret = random_bytes($keySize);
+        $secret2 = random_bytes($keySize);
+        $salt1 = random_bytes($kdf->getSaltSize());
+        $salt2 = random_bytes($kdf->getSaltSize());
+
+        // different salt
+        $key11 = $kdf->derive($secret, $keySize, 'test-context', $salt1);
+        $key12 = $kdf->derive($secret, $keySize, 'test-context', $salt2);
+        $this->assertNotSame($key11, $key12);
+
+        // different context
+        $key21 = $kdf->derive($secret, $keySize, 'test-context-1', $salt1);
+        $key22 = $kdf->derive($secret, $keySize, 'test-context-2', $salt1);
+        $this->assertNotSame($key21, $key22);
+
+        // different secret
+        $key31 = $kdf->derive($secret, $keySize, 'test-context', $salt1);
+        $key32 = $kdf->derive($secret2, $keySize, 'test-context', $salt1);
+        $this->assertNotSame($key31, $key32);
+    }
+
+    public function testInvalidHashAlgoThrowsException(): void
+    {
+        $this->expectException(RuntimeException::class);
+        $this->createKdfInstance('Non-Existing-Algorithm');
+    }
+
+    public function testInvalidSecretThrowsException(): void
+    {
+        $kdf = $this->createKdfInstance();
+
+        $this->expectException(EncryptionException::class);
+        $kdf->derive('', 32, 'test-context', 'test-salt');
+    }
+
+    public function testInvalidSizeThrowsException(): void
+    {
+        $kdf = $this->createKdfInstance();
+
+        $this->expectException(EncryptionException::class);
+        $kdf->derive('test-secret', -1, 'test-context', 'test-salt');
+    }
+
+    public function testSaltTooShortThrowsException(): void
+    {
+        $kdf = $this->createKdfInstance();
+        $salt = random_bytes($kdf->getSaltSize() - 1);
+
+        $this->expectException(EncryptionException::class);
+        $kdf->derive(random_bytes(32), 32, 'test-context', $salt);
+    }
+
+    public function testSaltTooLongThrowsException(): void
+    {
+        $kdf = $this->createKdfInstance();
+        $salt = random_bytes($kdf->getSaltSize() + 1);
+
+        $this->expectException(EncryptionException::class);
+        $kdf->derive(random_bytes(32), 32, 'test-context', $salt);
+    }
+
+    public function testGetSizes(): void
+    {
+        $cipher = $this->createKdfInstance();
+        $keySize = $cipher->getSaltSize();
+
+        $this->assertIsInt($keySize);
+        $this->assertGreaterThanOrEqual(0, $keySize);
+    }
+
+    abstract protected function createKdfInstance(?string $hashAlgo = null): KdfInterface;
+}
