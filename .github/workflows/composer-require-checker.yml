@@ -1,4 +1,4 @@
-name: psalm
+name: Composer Dependency Analyser
 
 on:
   pull_request:
@@ -13,7 +13,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  psalm:
+  composer-require-checker:
     name: PHP ${{ matrix.php }}-${{ matrix.os }}
 
     runs-on: ${{ matrix.os }}
@@ -39,12 +39,9 @@ jobs:
         with:
           php-version: ${{ matrix.php }}
           coverage: none
-          tools: composer:v2, cs2pr
 
       - name: Install Composer dependencies
         uses: ramsey/composer-install@65e4f84970763564f46a70b8a54b90d033b3bdda # 4.0.0
 
-      - name: Static analysis
-        env:
-          PHP_VERSION: ${{ matrix.php }}
-        run: vendor/bin/psalm --shepherd --stats --output-format=checkstyle --php-version=$PHP_VERSION | cs2pr --graceful-warnings --colorize
+      - name: Check dependencies
+        run: vendor/bin/composer-dependency-analyser
