@@ -3,10 +3,10 @@
 <br>
 
 [![Latest Stable Version](https://poser.pugx.org/authcrypt/crypto-php/v)](https://packagist.org/packages/authcrypt/crypto-php)
-[![Build status](https://github.com/authcrypt/crypto-php/actions/workflows/phpunit.yml/badge.svg)](https://github.com/authcrypt/crypto-php/actions/workflows/phpunit.yml)
+[![Build status](https://github.com/authcrypt/crypto-php/actions/workflows/tests.yml/badge.svg)](https://github.com/authcrypt/crypto-php/actions/workflows/tests.yml)
 [![Code Coverage](https://coveralls.io/repos/github/authcrypt/crypto-php/badge.svg)](https://coveralls.io/github/authcrypt/crypto-php)
 [![Mutation testing badge](https://img.shields.io/endpoint?style=flat&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2Fauthcrypt%2Fcrypto-php%2Fmaster)](https://dashboard.stryker-mutator.io/reports/github.com/authcrypt/crypto-php/master)
-[![static analysis](https://github.com/yiisoft/security/workflows/psalm/badge.svg)](https://github.com/authcrypt/crypto-php/actions?query=workflow%3A%22psalm%22)
+[![Static analysis](https://github.com/authcrypt/crypto-php/actions/workflows/psalm.yml/badge.svg?branch=master)](https://github.com/authcrypt/crypto-php/actions/workflows/psalm.yml?query=branch%3Amaster)
 [![type-coverage](https://shepherd.dev/github/authcrypt/crypto-php/coverage.svg)](https://shepherd.dev/github/authcrypt/crypto-php)
 
 This package provides a modern, authenticated encryption layer built on AEAD ciphers. It is designed for:
