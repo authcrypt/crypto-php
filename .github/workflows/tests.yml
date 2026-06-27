@@ -1,17 +1,9 @@
+name: tests
+
 on:
   pull_request:
   push:
     branches: ['master']
-    paths-ignore:
-      - 'docs/**'
-      - 'README.md'
-      - 'CHANGELOG.md'
-      - '.gitignore'
-      - '.gitattributes'
-      - 'infection.json.dist'
-      - 'psalm.xml'
-
-name: phpunit
 
 permissions:
   contents: read
@@ -54,7 +46,13 @@ jobs:
         uses: ramsey/composer-install@65e4f84970763564f46a70b8a54b90d033b3bdda # 4.0.0
 
       - name: Run tests with PHPUnit 
-        run: vendor/bin/phpunit
+        run: vendor/bin/phpunit --colors=always --coverage-clover=coverage.xml
+
+      - name: Upload coverage to Coveralls
+        if: matrix.os == 'ubuntu-latest'
+        uses: coverallsapp/github-action@v2
+        with:
+          file: ./coverage.xml
 
   phpunit-without-openssl-sodium:
     name: PHP 8.2 without openssl and sodium

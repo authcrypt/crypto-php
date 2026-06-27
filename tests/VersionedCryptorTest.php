@@ -117,7 +117,7 @@ final class VersionedCryptorTest extends TestCase
         $versioned = new VersionedCryptor(
             cryptors: [$version => $cryptor],
             currentVersion: $version,
-            versionSize: 2
+            versionSize: 2,
         );
         $encrypted = $versioned->encrypt($plaintext);
         $decrypted = $versioned->decrypt($encrypted);
