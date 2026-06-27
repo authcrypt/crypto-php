@@ -1,5 +1,6 @@
 # Application‑Level Encryption for PHP
 
+<br>
 [![Latest Stable Version](https://poser.pugx.org/authcrypt/crypto-php/v)](https://packagist.org/packages/authcrypt/crypto-php)
 [![Build status](https://github.com/authcrypt/crypto-php/actions/workflows/phpunit.yml/badge.svg)](https://github.com/authcrypt/crypto-php/actions/workflows/phpunit.yml)
 [![Code Coverage](https://coveralls.io/repos/github/authcrypt/crypto-php/badge.svg)](https://coveralls.io/github/authcrypt/crypto-php)
