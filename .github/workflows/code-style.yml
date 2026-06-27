@@ -1,0 +1,60 @@
+name: code style
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  rector-cs:
+    name: PHP CS Fixer + Rector
+
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write # Required to push PHP CS Fixer and Rector changes back to the branch.
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.head_ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          persist-credentials: false
+
+      - name: Install PHP with extensions
+        uses: shivammathur/setup-php@v2
+        env:
+          update: true
+        with:
+          php-version: 8.2
+          coverage: none
+          tools: composer:v2
+
+      - name: Install Composer dependencies
+        uses: ramsey/composer-install@65e4f84970763564f46a70b8a54b90d033b3bdda # 4.0.0
+
+      - name: Run PHP CS Fixer
+        run: composer cs-fix
+
+      - name: Run Rector
+        run: ./vendor/bin/rector --output-format=github
+
+      - name: Commit changes
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          HEAD_REF: ${{ github.head_ref }}
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -- '*.php'
+          git diff --cached --quiet || (
+            git commit -m "Apply PHP CS Fixer and Rector changes (CI)"
+            git push "https://x-access-token:${GITHUB_TOKEN}@github.com/${REPOSITORY}.git" "HEAD:${HEAD_REF}"
+          )

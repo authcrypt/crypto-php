@@ -19,7 +19,7 @@ final class StringHelper
      *
      * @psalm-return int<0, max>
      */
-    public static function byteLength(string|null $input): int
+    public static function byteLength(?string $input): int
     {
         return mb_strlen((string) $input, '8bit');
     }
