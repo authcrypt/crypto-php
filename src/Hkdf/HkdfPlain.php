@@ -64,7 +64,7 @@ final readonly class HkdfPlain implements KdfInterface
         #[SensitiveParameter]
         string $secret,
         int $keySize,
-        string $context,
+        string $context = '',
         string $salt = '',
     ): string {
         /** @psalm-suppress ImpureMethodCall */
