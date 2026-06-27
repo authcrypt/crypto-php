@@ -41,11 +41,12 @@ jobs:
           update: true
         with:
           php-version: ${{ matrix.php }}
+          extensions: openssl, sodium
 
       - name: Install Composer dependencies
         uses: ramsey/composer-install@65e4f84970763564f46a70b8a54b90d033b3bdda # 4.0.0
 
-      - name: Run tests with PHPUnit 
+      - name: Run tests with PHPUnit
         run: vendor/bin/phpunit --colors=always --coverage-clover=coverage.xml
 
       - name: Upload coverage to Coveralls
