@@ -52,7 +52,7 @@ jobs:
 
       - name: Upload coverage to Coveralls
         if: matrix.os == 'ubuntu-latest'
-        uses: coverallsapp/github-action@v2
+        uses: coverallsapp/github-action@v2.3.6
         with:
           file: ./coverage.xml
 
